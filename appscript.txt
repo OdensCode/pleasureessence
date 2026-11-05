@@ -1,0 +1,48 @@
+function doPost(e) {
+  try {
+    // Get the active sheet
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
+    
+    // Extract parameters from FormData
+    const parameters = e.parameter;
+    
+    // Append row with the 6 main fields
+    sheet.appendRow([
+      parameters.name,           // Name of the person
+      parameters.contact,        // Contact number
+      parameters.email,          // Email
+      parameters.address,        // Address
+      parameters.products,       // Product & number (concatenated string)
+      parameters.totalPrice,     // Total checkout price
+      parameters.orderId || "",  // Optional: order ID
+      new Date()                 // Timestamp
+    ]);
+
+    // Return success response
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        result: "success", 
+        message: "Order recorded successfully!" 
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+
+  } catch (error) {
+    // Log the error
+    Logger.log(error.toString());
+    
+    // Return error response
+    return ContentService
+      .createTextOutput(JSON.stringify({ 
+        result: "error", 
+        message: error.toString() 
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Handle OPTIONS preflight requests (if needed)
+function doOptions() {
+  return ContentService
+    .createTextOutput()
+    .setMimeType(ContentService.MimeType.JSON);
+}
